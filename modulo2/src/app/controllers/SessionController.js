@@ -1,36 +1,36 @@
-const { User } = require("../models");
+const { User } = require('../models')
 
 class SessionController {
-  async create(req, res) {
-    return res.render("auth/signin");
+  async create (req, res) {
+    return res.render('auth/signin')
   }
 
-  async store(req, res) {
-    const { email, password } = req.body;
+  async store (req, res) {
+    const { email, password } = req.body
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email } })
 
     if (!user) {
-      console.log("Usuario nao encontrado");
-      return res.redirect("/");
+      req.flash('error', 'Usuario não encontrado')
+      return res.redirect('/')
     }
 
     if (!(await user.checkPassword(password))) {
-      console.log("Senha incorreta");
-      return res.redirect("/");
+      req.flash('error', 'Senha incorreta')
+      return res.redirect('/')
     }
 
-    req.session.user = user;
+    req.session.user = user
 
-    return res.redirect("/app/dashboard");
+    return res.redirect('/app/dashboard')
   }
 
-  destroy(req, res) {
+  destroy (req, res) {
     req.session.destroy(() => {
-      res.clearCookie("root");
-      return res.redirect("/");
-    });
+      res.clearCookie('root')
+      return res.redirect('/')
+    })
   }
 }
 
-module.exports = new SessionController();
+module.exports = new SessionController()
